@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻详情</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .react-icon {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .react-count {
+            margin-right: 10px;
+        }
+        .news-detail-container {
+            padding: 20px;
+        }
+        .back-to-recommend-btn {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container news-detail-container">
+        <h2 id="news-title"></h2>
+        <div id="news-content"></div>
+        <div class="news-reactions">
+            <span class="react-count">浏览：<span id="click-count"></span></span>
+            <span class="react-count">
+                <img id="like-icon" class="react-icon" src="../static/like-icon.png" onclick="updateReaction('like')">赞：<span id="like-count"></span>
+            </span>
+            <span class="react-count">
+                <img id="hate-icon" class="react-icon" src="../static/hate-icon.png" onclick="updateReaction('hate')">踩：<span id="hate-count"></span>
+            </span>
+        </div>
+        <button onclick="window.location.href='/recommend'" class="back-to-recommend-btn">返回推荐列表</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const newsId = window.location.pathname.split('/').pop();
+
+        $(document).ready(function() {
+            $.ajax({
+                url: `/api/news_detail/${newsId}`,
+                method: 'GET',
+                success: function(data) {
+                    $('#news-title').text(data.title || data.category); // Use data.title if available, else category
+                    $('#news-content').html(data.content); // Using .html() for flexibility
+
+                    // Update click count, like count, and hate count
+                    $('#click-count').text(data.click_count || 0);
+                    $('#like-count').text(data.like_count || 0);
+                    $('#hate-count').text(data.hate_count || 0);
+
+                    // Update like and hate icons based on user reactions
+                    $('#like-icon').attr('src', data.liked ? '../static/like-icon-click.png' : '../static/like-icon.png');
+                    $('#hate-icon').attr('src', data.hated ? '../static/hate-icon-click.png' : '../static/hate-icon.png');
+                },
+                error: function() {
+                    $('#news-title').text('错误');
+                    $('#news-content').text('无法加载新闻详情，请稍后再试。');
+                }
+            });
+        });
+
+        function updateReaction(reaction) {
+            $.ajax({
+                url: `/api/update_reaction/${newsId}/${reaction}`,
+                method: 'POST',
+                success: function(data) {
+                    // Update the counts after a successful reaction
+                    if (reaction === 'like') {
+                        $('#like-count').text(data.like_count); // Update like count
+                        $('#like-icon').attr('src', '../static/like-icon-click.png'); // Change icon to filled
+                    } else if (reaction === 'hate') {
+                        $('#hate-count').text(data.hate_count); // Update hate count
+                        $('#hate-icon').attr('src', '../static/hate-icon-click.png'); // Change icon to filled
+                    }
+                },
+                error: function() {
+                    console.error(`Failed to update ${reaction} reaction.`);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

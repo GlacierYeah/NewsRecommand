@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻推荐</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .react-icon {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .react-count {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="recommend-title">推荐新闻</h1>
+        <div id="news-container"></div>
+        <div id="loading" style="display: none;">加载中...</div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let page = 1;
+        let isLoading = false;
+        let noMoreNews = false;
+
+        $(document).ready(function() {
+            // 从 sessionStorage 获取缓存的推荐新闻
+            const cachedNews = JSON.parse(sessionStorage.getItem('cachedNews'));
+            if (cachedNews && cachedNews.length > 0) {
+                // 如果有缓存的新闻，直接加载它们
+                loadNewsFromCache(cachedNews);
+                updateDynamicData(cachedNews);  // 更新动态数据（浏览量、赞、踩）
+            } else {
+                // 如果没有缓存的新闻，则加载第一页的新闻
+                loadMoreNews();
+            }
+
+            // 监听滚动事件，当滚动到底部时加载新的推荐新闻
+            $(window).scroll(function() {
+                if (noMoreNews || isLoading) return;
+                if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+                    loadMoreNews();
+                }
+            });
+        });
+
+        // 从缓存中加载新闻
+        function loadNewsFromCache(cachedNews) {
+            cachedNews.forEach(news => {
+                appendNewsToContainer(news);
+            });
+        }
+
+        // 加载更多新闻
+        function loadMoreNews() {
+            if (isLoading || noMoreNews) return;
+
+            isLoading = true;
+            $('#loading').text('加载中...').show();
+
+            $.ajax({
+                url: `/api/recommend?page=${page}`,
+                method: 'GET',
+                success: function(data) {
+                    if (data.length > 0) {
+                        // 将新的新闻追加到容器中
+                        data.forEach(news => {
+                            appendNewsToContainer(news);
+                        });
+
+                        // 缓存新闻数据到 sessionStorage
+                        const cachedNews = JSON.parse(sessionStorage.getItem('cachedNews')) || [];
+                        cachedNews.push(...data);
+                        sessionStorage.setItem('cachedNews', JSON.stringify(cachedNews));
+
+                        page++;
+                        $('#loading').hide();
+                    } else {
+                        noMoreNews = true;
+                        if (page === 1) {
+                            $('#loading').text('暂无新闻').show();
+                        } else {
+                            $('#loading').text('没有更多新闻了').show();
+                        }
+                    }
+                    isLoading = false;
+                },
+                error: function() {
+                    isLoading = false;
+                    $('#loading').text('加载失败，请稍后再试。').show();
+                }
+            });
+        }
+
+        // 向页面添加新闻
+        function appendNewsToContainer(news) {
+            const shortContent = truncateContent(news.content, 100);
+            $('#news-container').append(`
+                <div class="news-item" data-news-id="${news.news_id}">
+                    <h3>${news.category}</h3>
+                    <p class="news-content-short">${shortContent}</p>
+                    <button class="view-more-btn" onclick="handleNewsClick(event, ${news.news_id})">查看更多</button>
+                    <div class="news-reactions">
+                        <span class="react-count" id="click-count-${news.news_id}">浏览：${news.click_count}</span>
+                        <span class="react-count">
+                            <img src="${news.liked ? '../static/like-icon-click.png' : '../static/like-icon.png'}" class="react-icon" onclick="updateReaction(event, ${news.news_id}, 'like')">赞：<span id="like-count-${news.news_id}">${news.like_count}</span>
+                        </span>
+                        <span class="react-count">
+                            <img src="${news.hated ? '../static/hate-icon-click.png' : '../static/hate-icon.png'}" class="react-icon" onclick="updateReaction(event, ${news.news_id}, 'hate')">踩：<span id="hate-count-${news.news_id}">${news.hate_count}</span>
+                        </span>
+                    </div>
+                </div>
+            `);
+        }
+
+        // 截取内容，最多显示 100 字
+        function truncateContent(content, maxLength) {
+            if (content && typeof content === 'string' && content.length > maxLength) {
+                return content.substring(0, maxLength) + '...';
+            }
+            return content || '';
+        }
+
+        // 查看新闻详情并更新浏览量
+        function handleNewsClick(event, news_id) {
+            event.stopPropagation();  // 防止点击按钮时触发父元素的点击事件
+
+            const $button = $(event.target);
+            $button.prop('disabled', true).text('处理中...');
+
+            // 发送请求更新浏览量
+            $.ajax({
+                url: `/api/update_click/${news_id}`,
+                method: 'POST',
+                success: function() {
+                    window.location.href = `/news_detail/${news_id}`;
+                },
+                error: function() {
+                    console.error('Failed to update click count.');
+                    window.location.href = `/news_detail/${news_id}`;
+                }
+            });
+        }
+
+        // 更新赞/踩反应
+        function updateReaction(event, news_id, reaction) {
+            event.stopPropagation();  // 防止事件冒泡
+
+            const $icon = $(event.target);
+            const $countElement = $icon.siblings('.react-count').find('span');  // 获取数量元素
+            let currentCount = parseInt($countElement.text());
+
+            $icon.prop('disabled', true);  // 禁用图标
+
+            $.ajax({
+                url: `/api/update_reaction/${news_id}/${reaction}`,
+                method: 'POST',
+                success: function(data) {
+                    // 更新赞/踩图标和数量
+                    if (reaction === 'like') {
+                        $icon.attr('src', '../static/like-icon-click.png');
+                        currentCount = data.like_count;
+                        $countElement.text(currentCount);
+                    } else if (reaction === 'hate') {
+                        $icon.attr('src', '../static/hate-icon-click.png');
+                        currentCount = data.hate_count;
+                        $countElement.text(currentCount);
+                    }
+
+                    // 更新缓存中的赞/踩数据
+                    const cachedNews = JSON.parse(sessionStorage.getItem('cachedNews'));
+                    const updatedNews = cachedNews.map(news => {
+                        if (news.news_id === news_id) {
+                            if (reaction === 'like') {
+                                news.like_count = currentCount;
+                            } else {
+                                news.hate_count = currentCount;
+                            }
+                        }
+                        return news;
+                    });
+                    sessionStorage.setItem('cachedNews', JSON.stringify(updatedNews));
+                },
+                error: function() {
+                    console.error(`Failed to update ${reaction} reaction.`);
+                    $icon.prop('disabled', false);  // 恢复图标状态
+                }
+            });
+        }
+
+        // 更新所有已加载新闻的动态数据（浏览量、赞、踩）
+        function updateDynamicData(cachedNews) {
+            cachedNews.forEach(news => {
+                $.ajax({
+                    url: `/api/news_detail/${news.news_id}`,
+                    method: 'GET',
+                    success: function(data) {
+                        // 更新浏览量、赞、踩等数据
+                        $(`#click-count-${news.news_id}`).text(`浏览：${data.click_count}`);
+                        $(`#like-count-${news.news_id}`).text(data.like_count);
+                        $(`#hate-count-${news.news_id}`).text(data.hate_count);
+                        $(`[data-news-id="${news.news_id}"] .react-count img[src="../static/like-icon.png"]`).attr('src', data.liked ? '../static/like-icon-click.png' : '../static/like-icon.png');
+                        $(`[data-news-id="${news.news_id}"] .react-count img[src="../static/hate-icon.png"]`).attr('src', data.hated ? '../static/hate-icon-click.png' : '../static/hate-icon.png');
+                    },
+                    error: function() {
+                        console.error('Failed to update dynamic data for news ID: ' + news.news_id);
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

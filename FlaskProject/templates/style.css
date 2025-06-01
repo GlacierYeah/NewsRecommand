@@ -1,0 +1,224 @@
+/* static/style.css */
+
+/* 基础重置和全局设置 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f7f6; /* 淡雅的背景色 */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 水平居中页面主要内容容器 */
+    min-height: 100vh;
+    padding-top: 20px; /* 给顶部一些空间 */
+}
+
+.container {
+    width: 90%;
+    max-width: 800px; /* 主内容区域最大宽度 - recommend 和 news_detail */
+    margin: 20px auto; /* 上下边距及水平居中 */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* 更柔和的阴影 */
+}
+
+h1, h2, h3 {
+    color: #2c3e50; /* 深蓝灰色标题 */
+    margin-bottom: 15px;
+}
+
+h1 { /* General h1 styling */
+    font-size: 2.2em;
+}
+
+h2 {
+    font-size: 1.8em;
+}
+
+h3 {
+    font-size: 1.4em;
+}
+
+
+button, input[type="submit"] {
+    background-color: #3498db; /* 主题蓝色 */
+    color: white;
+    border: none;
+    padding: 10px 18px; /* Adjusted padding for a slightly smaller default button */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px; /* Adjusted font size */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* 过渡效果 */
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #2980b9; /* 悬停时颜色加深 */
+    transform: translateY(-2px); /* 轻微上移 */
+}
+
+button:active, input[type="submit"]:active {
+    transform: translateY(0); /* 点击时复原 */
+}
+
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Login Page Styles */
+.login-container { /* This will be a .container, so it gets base padding/shadow */
+    width: 100%;
+    max-width: 480px; /* Increased max-width for login card */
+    text-align: center;
+}
+
+.login-container h1 {
+    margin-bottom: 30px; /* More space below title */
+    font-size: 2em;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px; /* Increased gap */
+}
+
+.login-container label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    text-align: left;
+    font-weight: bold;
+    font-size: 0.95em; /* Slightly smaller label font */
+}
+
+.login-container input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em; /* Standard input font size */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container input[type="text"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    outline: none;
+}
+
+.login-container button[type="submit"] { /* Specific styling if needed, otherwise global is fine */
+    padding: 12px 20px; /* Keep login button a bit more prominent if desired */
+    font-size: 1em;
+}
+
+
+/* Recommend Page Styles */
+.container > h1 { /* 针对直接在.container下的主标题 */
+    text-align: center;
+    margin-bottom: 30px; /* 与新闻列表的间距 */
+}
+
+#news-container {
+    display: flex; /* Changed from grid to flex */
+    flex-direction: column; /* Stack news items vertically */
+    gap: 25px; /* Space between news cards */
+    width: 100%; /* Ensure it uses the container width */
+}
+
+.news-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%; /* Each card takes full width of its container */
+    /* min-height: 150px; Optional: ensure a minimum height for cards */
+}
+
+.news-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+.news-item h3 { /* News card title (category) */
+    font-size: 1.3em; /* Adjusted size */
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+.news-item p.news-content-short {
+    flex-grow: 1;
+    color: #555;
+    margin-bottom: 20px; /* More space before button */
+    font-size: 0.9em; /* Adjusted size */
+    line-height: 1.5;
+}
+
+.news-item .view-more-btn {
+    align-self: flex-end; /* Position button to the right */
+    padding: 6px 12px;    /* Smaller padding */
+    font-size: 0.85em;   /* Smaller font size */
+    /* background-color: #27ae60; /* Example of a different color if you want */
+}
+
+#loading {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-style: italic;
+    width: 100%;
+}
+
+/* News Detail Page Styles */
+.news-detail-container {
+    padding-top: 10px;
+    padding-bottom: 30px;
+}
+
+.news-detail-container h2#news-title { /* News detail page main title */
+    font-size: 2em; /* Adjusted size */
+    color: #16a085;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.news-detail-container div#news-content {
+    font-size: 1.05em; /* Adjusted size */
+    line-height: 1.8;
+    color: #444;
+    text-align: justify;
+}
+
+.news-detail-container div#news-content p {
+    margin-bottom: 1em;
+}
+
+.news-detail-container .back-to-recommend-btn {
+    margin-top: 30px;
+    display: inline-block;
+    /* background-color: #3498db; Already inherits from global button style */
+}
+
+/* .news-detail-container .back-to-recommend-btn:hover {
+    background-color: #2980b9; Already inherits
+} */

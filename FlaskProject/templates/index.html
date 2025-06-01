@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 新闻推荐系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1 class="system-title">新闻推荐系统</h1>
+
+    <div class="container login-container">
+        <h1>登录</h1>
+        <form id="login-form" method="POST">
+            <div>
+                <label for="username">用户名:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <button type="submit">登录</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 监听表单提交事件
+            $('#login-form').submit(function(event) {
+                event.preventDefault();  // 阻止表单的默认提交行为
+
+                const username = $('#username').val();  // 获取用户名
+
+                // 清除缓存
+                sessionStorage.clear();  // 清空 sessionStorage
+                // 或者清空 localStorage，如果有用到的话
+                // localStorage.clear();
+
+                // 进行登录请求
+                $.ajax({
+                    url: '/',  // 登录 API 路由
+                    method: 'POST',
+                    data: { username: username },
+                    success: function(response) {
+                        // 如果登录成功，跳转到推荐页面
+                        if (response.includes('登录失败')) {
+                            alert(response);
+                        } else {
+                            window.location.href = '/recommend';  // 跳转到推荐页
+                        }
+                    },
+                    error: function() {
+                        alert('登录请求失败，请稍后再试。');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

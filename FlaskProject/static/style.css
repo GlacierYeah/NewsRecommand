@@ -1,0 +1,235 @@
+/* static/style.css */
+
+/* 基础重置和全局设置 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f7f6;
+    color: #333;
+    display: flex;
+    flex-direction: column; /* 确保子元素垂直排列 */
+    align-items: center; /* 水平居中所有直接子元素 */
+    min-height: 100vh;
+    padding-top: 40px; /* 可以调整body的顶部padding，给系统标题留出更多空间 */
+}
+
+/* 新增：系统主标题样式 */
+.system-title {
+    font-size: 2.8em; /* 可以根据喜好调整大小 */
+    color: #2c3e50; /* 与其他标题颜色一致或自定义 */
+    margin-bottom: 30px; /* 与下方登录卡片的间距 */
+    text-align: center; /* 确保文本居中，即使body没有align-items */
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 2.2em;
+}
+
+h2 {
+    font-size: 1.8em;
+}
+
+h3 {
+    font-size: 1.4em;
+}
+
+/* === 全局按钮样式 - 修改为绿色主题 === */
+button, input[type="submit"] {
+    background-color: #16a085; /* 全局绿色按钮 */
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #138d75; /* 全局绿色按钮悬停加深 */
+    transform: translateY(-2px);
+}
+
+button:active, input[type="submit"]:active {
+    transform: translateY(0);
+}
+
+a {
+    color: #16a085; /* 链接颜色也与主题绿色呼应 */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Login Page Styles */
+.login-container {
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    margin-top: 20px; /* 原本是80px，因为上方加了系统标题，可以适当减小这里的间距 */
+                      /* 或者如果觉得系统标题和登录框间距已经由 system-title 的 margin-bottom 控制了，这里可以设为0或较小值*/
+}
+
+.login-container h1 { /* 登录页的h1标题保持默认深蓝灰色 */
+    margin-bottom: 30px;
+    font-size: 2em;
+    color: #2c3e50;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.login-container label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    text-align: left;
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+.login-container input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container input[type="text"]:focus {
+    border-color: #16a085; /* 输入框聚焦时边框颜色也使用绿色 */
+    box-shadow: 0 0 5px rgba(22, 160, 133, 0.5); /* 阴影也用绿色系 */
+    outline: none;
+}
+
+.login-container button[type="submit"] { /* 登录按钮会继承全局按钮样式 */
+    padding: 12px 20px; /* 可以为登录按钮保留稍大一点的padding */
+    font-size: 1em;
+}
+
+
+/* Recommend Page Styles */
+/* "推荐新闻" 标题的颜色 */
+.container > h1.recommend-title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #16a085; /* 保持绿色 */
+}
+
+#news-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+}
+
+.news-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.news-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+.news-item h3 {
+    font-size: 1.3em;
+    color: #34495e;
+    margin-bottom: 10px;
+}
+
+.news-item p.news-content-short {
+    flex-grow: 1;
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+/* "查看更多" 按钮会继承全局绿色按钮样式 */
+.news-item .view-more-btn {
+    align-self: flex-end;
+    padding: 6px 12px;
+    font-size: 0.85em;
+    /* background-color and hover color will be inherited from global button styles */
+}
+
+#loading {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-style: italic;
+    width: 100%;
+}
+
+/* News Detail Page Styles */
+.news-detail-container {
+    padding-top: 10px;
+    padding-bottom: 30px;
+}
+
+.news-detail-container h2#news-title {
+    font-size: 2em;
+    color: #16a085; /* 详情页标题绿色 */
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.news-detail-container div#news-content {
+    font-size: 1.05em;
+    line-height: 1.8;
+    color: #444;
+    text-align: justify;
+}
+
+.news-detail-container div#news-content p {
+    margin-bottom: 1em;
+}
+
+/* "返回推荐列表" 按钮会继承全局绿色按钮样式 */
+.news-detail-container .back-to-recommend-btn {
+    margin-top: 30px;
+    display: inline-block;
+    /* background-color and hover color will be inherited from global button styles */
+}
+
